@@ -69,6 +69,10 @@ export default function Login() {
         message = 'Este dominio no está autorizado en la consola de Firebase.';
       } else if (errorCode === 'auth/popup-blocked') {
         message = 'El navegador bloqueó la ventana emergente.';
+      } else if (errorCode === 'auth/popup-closed-by-user') {
+        message = 'La ventana de inicio de sesión se cerró antes de completar el proceso.';
+        showToast(message, 'info');
+        return;
       }
       
       showToast(`${message} (${errorCode})`, 'error');
