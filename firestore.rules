@@ -1,0 +1,62 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function for authentication check
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Domain validator for Event entity
+    function isValidEvent(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.category in ['Concierto', 'Deportes', 'Festival', 'Cultura'] &&
+             data.date is string &&
+             data.location is string && data.location.size() > 0 &&
+             data.price is number && data.price >= 0 &&
+             data.image is string && data.image.size() > 0 &&
+             data.description is string && data.description.size() > 0 && data.description.size() < 5000;
+    }
+    
+    // Check if user is the designated admin
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.email == "plantillas.ms@gmail.com";
+    }
+
+    // Domain validator for Ticket entity
+    function isValidTicket(data) {
+      return data.eventId is string && 
+             data.eventTitle is string && 
+             data.quantity is number && data.quantity > 0 &&
+             data.userId == request.auth.uid &&
+             data.confirmationNumber is string &&
+             data.purchasedAt is string;
+    }
+
+    // Rules for events
+    match /events/{eventId} {
+      // Anyone can read events
+      allow read: if true;
+      
+      // Only admin can write
+      allow create: if isAdmin() && isValidEvent(request.resource.data);
+      allow update: if isAdmin() && isValidEvent(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Rules for tickets
+    match /tickets/{ticketId} {
+      // Users can only read their own tickets
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      // Users can create their own tickets
+      allow create: if isAuthenticated() && isValidTicket(request.resource.data);
+      
+      // No updates or deletes allowed for tickets by users for integrity
+      allow update, delete: if isAdmin();
+    }
+    
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

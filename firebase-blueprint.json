@@ -1,0 +1,109 @@
+{
+  "entities": {
+    "Event": {
+      "title": "Event",
+      "description": "Un evento o espectáculo disponible en TicketFenix",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Nombre del evento"
+        },
+        "category": {
+          "type": "string",
+          "description": "Categoría (Concierto, Deportes, Festival, Cultura)"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "Fecha del evento"
+        },
+        "location": {
+          "type": "string",
+          "description": "Lugar y ciudad del evento"
+        },
+        "price": {
+          "type": "number",
+          "description": "Precio base del boleto"
+        },
+        "image": {
+          "type": "string",
+          "description": "URL de la imagen representativa"
+        },
+        "description": {
+          "type": "string",
+          "description": "Descripción detallada"
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "Si es un evento destacado en el home"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Fecha de creación del registro"
+        }
+      },
+      "required": ["title", "category", "date", "location", "price", "image", "description"]
+    },
+    "Ticket": {
+      "title": "Ticket",
+      "description": "Un boleto comprado por un usuario",
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "ID del evento asociado"
+        },
+        "eventTitle": {
+          "type": "string",
+          "description": "Nombre del evento"
+        },
+        "eventDate": {
+          "type": "string",
+          "description": "Fecha del evento"
+        },
+        "eventImage": {
+          "type": "string",
+          "description": "Imagen del evento"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Cantidad de boletos comprados"
+        },
+        "totalPrice": {
+          "type": "number",
+          "description": "Precio total pagado"
+        },
+        "confirmationNumber": {
+          "type": "string",
+          "description": "Código único de confirmación"
+        },
+        "userId": {
+          "type": "string",
+          "description": "ID del usuario propietario"
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "Correo del usuario"
+        },
+        "purchasedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Fecha de la compra"
+        }
+      },
+      "required": ["eventId", "eventTitle", "quantity", "userId", "confirmationNumber", "purchasedAt"]
+    }
+  },
+  "firestore": {
+    "/events/{eventId}": {
+      "schema": "Event",
+      "description": "Colección global de eventos disponibles"
+    },
+    "/tickets/{ticketId}": {
+      "schema": "Ticket",
+      "description": "Colección de boletos comprados por los usuarios"
+    }
+  }
+}
