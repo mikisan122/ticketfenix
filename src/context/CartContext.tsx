@@ -31,27 +31,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [cart]);
 
   const addToCart = (event: Event, quantity: number) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.event.id === event.id);
-      if (existing) {
-        showToast(`Cantidad actualizada: ${event.title}`, 'info');
-        return prev.map(item => 
-          item.event.id === event.id 
-            ? { ...item, quantity: item.quantity + quantity } 
-            : item
-        );
-      }
+    const existing = cart.find(item => item.event.id === event.id);
+    
+    if (existing) {
+      setCart(prev => prev.map(item => 
+        item.event.id === event.id 
+          ? { ...item, quantity: item.quantity + quantity } 
+          : item
+      ));
+      showToast(`Cantidad actualizada: ${event.title}`, 'info');
+    } else {
+      setCart(prev => [...prev, { event, quantity }]);
       showToast(`¡Agregado al carrito: ${event.title}!`, 'success');
-      return [...prev, { event, quantity }];
-    });
+    }
   };
 
   const removeFromCart = (eventId: string) => {
-    setCart(prev => {
-      const remaining = prev.filter(item => item.event.id !== eventId);
-      showToast('Evento eliminado del carrito', 'info');
-      return remaining;
-    });
+    setCart(prev => prev.filter(item => item.event.id !== eventId));
+    showToast('Evento eliminado del carrito', 'info');
   };
 
   const updateQuantity = (eventId: string, quantity: number) => {

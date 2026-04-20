@@ -60,9 +60,18 @@ export default function Login() {
       await signInWithPopup(auth, googleProvider);
       showToast('Bienvenido con Google', 'success');
       navigate('/');
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error logging in with Google:", error);
-      showToast('Error al iniciar sesión con Google', 'error');
+      const errorCode = error.code || 'unknown';
+      let message = 'Error al iniciar sesión con Google';
+      
+      if (errorCode === 'auth/unauthorized-domain') {
+        message = 'Este dominio no está autorizado en la consola de Firebase.';
+      } else if (errorCode === 'auth/popup-blocked') {
+        message = 'El navegador bloqueó la ventana emergente.';
+      }
+      
+      showToast(`${message} (${errorCode})`, 'error');
     } finally {
       setLoading(false);
     }
